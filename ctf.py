@@ -1,5 +1,5 @@
 import flask
-import html
+import html, string, random
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -210,6 +210,49 @@ def game5():
       </body>
     </html>
     """
+
+def random_string():
+    return "".join(random.choices(string.ascii_letters+string.digits+".", k=100))
+
+@app.route("/game-6/get_sid")
+def game6_auth():
+    return f"{random_string()}.eyJzdWIiOiJjNGYxZWU2Mi0xYjc4LTQzZDEtYjc2My1iOWE0YjhiMDk4MzAiLCJ1c2VyaWQiOiI3NGY5MTRlZC1hMWI4LTQxYjctYTEyNi03NjZmZTE1OGFmOTMiLCJ0cmFja3VzZXJpZCI6ImJhNTRiMmQzLWYxNmUtNDdlOS04YmZmLTExZDA1ODM4M2Q0ZCJ9.{random_string()}.{random_string()}"
+
+@app.route("/game-6/", methods=["GET", "POST"])
+def game6():
+    if request.method == "POST":
+        if "74f914ed-a1b8-41b7-a126-766fe158af93" == request.form.get("uid"):
+            return "<center><h1>CTF: 8fc17e94-a340-4bfd-8657-cb9c56386a31</h1></center>"
+        else:
+            return flask.redirect(".", code=301)
+    return """<!DOCTYPE html>
+        <html lang="en" dir="ltr">
+          <head>
+            <meta charset="utf-8">
+            <title>CTF Game</title>
+            <script>
+                if (sessionStorage.getItem("SID") === null) {
+                    fetch('get_sid').then(async (response) => { window.sessionStorage.setItem("SID", await response.text())}).catch(err => {console.log('Error :-S', err)});
+                }
+                if (document.referrer) {
+                    let a = new URL(document.referrer);
+                    if (a.href === location.href) { alert("user id not found") }
+                }
+            </script>
+          </head>
+          <body>
+              <center>
+                    <form method="post">
+                        <label for="uname"><b>Magic Login</b></label>
+                        <br>
+                        <input type="text" placeholder="User ID" name="uid" required>
+                        <button type="submit">Get Magic Link</button>
+                    </form>
+              </center>
+          </body>
+        </html>
+        """
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=1111)
