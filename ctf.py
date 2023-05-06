@@ -1,5 +1,5 @@
 import flask
-import html, string, random
+import html, string, random, base64, json
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -212,11 +212,12 @@ def game5():
     """
 
 def random_string():
-    return "".join(random.choices(string.ascii_letters+string.digits+".", k=100))
+    return "".join(random.choices(string.ascii_letters+string.digits, k=100))
 
 @app.route("/game-6/get_sid")
 def game6_auth():
-    return f"{random_string()}.eyJzdWIiOiJjNGYxZWU2Mi0xYjc4LTQzZDEtYjc2My1iOWE0YjhiMDk4MzAiLCJ1c2VyaWQiOiI3NGY5MTRlZC1hMWI4LTQxYjctYTEyNi03NjZmZTE1OGFmOTMiLCJ0cmFja3VzZXJpZCI6ImJhNTRiMmQzLWYxNmUtNDdlOS04YmZmLTExZDA1ODM4M2Q0ZCJ9.{random_string()}.{random_string()}"
+    a = {random_string(): random_string(), random_string(): random_string(), "user_link_id":"c4f1ee62-1b78-43d1-b763-b9a4b8b09830","uid":"74f914ed-a1b8-41b7-a126-766fe158af93","trackuserid":"ba54b2d3-f16e-47e9-8bff-11d058383d4d", random_string(): random_string(), random_string(): random_string()}
+    return base64.urlsafe_b64encode(json.dumps(a).encode()).decode().replace("=", "")
 
 @app.route("/game-6/", methods=["GET", "POST"])
 def game6():
