@@ -256,7 +256,7 @@ def game6():
 
 @app.route("/game-7/")
 def game7():
-    a = flask.Response(status=418)
+    a = flask.Response(status="418")
     a.headers.set("MSG", "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418")
     a.headers.set("CTF", "461950fe-54e9-4a11-9ae2-e427d0e0a7a0")
     return a
