@@ -1,4 +1,5 @@
 import flask
+from urllib import parse
 import html, string, random, base64, json
 from flask import Flask, request, jsonify
 
@@ -260,6 +261,59 @@ def game7():
     a.headers.set("MSG", "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/418")
     a.headers.set("CTF", "461950fe-54e9-4a11-9ae2-e427d0e0a7a0")
     return a
+
+
+@app.route("/game-8/", methods=["GET", "POST"])
+def game8():
+    # 89f4bb79-7f2b-467a-a916-3f1d1a941f82
+    if request.method == "POST":
+        if parse.urlparse(request.args.get("url", "https://a")).hostname != "ctf.nezukobot.vn":
+            return """<center>
+                            <h1>Link Không hợp lệ</h1>
+                            <a href="">Quay lại</a>
+                        </center>
+                    """
+        else:
+            if len(parse.parse_qs(request.query_string.decode()).get("url")) > 1:
+                return "<center><h1>CTF: 89f4bb79-7f2b-467a-a916-3f1d1a941f82</h1><h2>https://www.youtube.com/watch?v=QVZBl8yxVX0</h2></center>"
+            return """<center>
+                        <h1>Đã chia sẻ</h1>
+                        <a href="">Quay lại</a>
+                      </center>
+                    """
+
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <center>
+            <h1>Duy Cybersec - CTF Share</h1>
+            <input type="url" id="urlip" required placeholder="Duy Cybersec - CTF link">
+            <form method="post">
+                <input type="submit" value="Submit">
+            </form>
+            <script>
+                window.history.pushState(" ", " ", location.pathname);
+                let id = document.getElementById("urlip")
+                function update() {
+                    if (id.value) {
+                        window.history.pushState(" ", " ", `?url=${id.value.replaceAll(" ", "%20")}`);
+                    } else {
+                        window.history.pushState(" ", " ", location.pathname);
+                    }
+                }
+                id.addEventListener("input", update)
+            </script>
+        </center>
+    </body>
+    </html>
+    """
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=1111)
