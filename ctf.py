@@ -1,4 +1,4 @@
-import flask
+import flask, sqlite3
 from urllib import parse
 import html, string, random, base64, json
 from flask import Flask, request, jsonify
@@ -314,6 +314,100 @@ def game8():
     </body>
     </html>
     """
+
+DATABASE = 'users.db'
+
+@app.route('/game-9/', methods=['get'])
+def game_9():
+    return """
+    <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF | Bank Management System</title>
+</head>
+
+<body>
+    <center>
+        <h1>Bank Management System</h1>
+        <h2 id="err"></h2>
+        <label for="username"><b>Username</b></label>
+        <br>
+        <input id="u" type="text" placeholder="Enter Username" name="username" required>
+        <br>
+        <label for="psw"><b>Password</b></label>
+        <br>
+        <input id="p" type="password" placeholder="Enter Password" name="psw" required>
+        <br>
+        <input id="sm" type="submit" value="Submit">
+        <script>
+            let p = document.getElementById("p")
+            let u = document.getElementById("u")
+            let err = document.getElementById("err")
+            let sm = document.getElementById("sm")
+            async function submit() {
+                if (!(u.value && p.value)) {
+                    err.style.backgroundColor = "#FF0000"
+                    err.innerText = "Please enter pasword and username"
+                    return
+                }
+                let formData = new FormData();
+                formData.append('u', u.value);
+                formData.append('p', p.value);
+                let req = await fetch("./login", {
+                    body: formData,
+                    method: "post"
+                })
+                if (req.status === 200) {
+                    let datas = await req.json();
+                    err.innerText = datas.message
+                    if (datas.success) {
+                        err.style.backgroundColor = "#32CD32"
+                    } else {
+                        err.style.backgroundColor = "#FF0000"
+                    }
+                } else {
+                    err.style.backgroundColor = "#FF0000"
+                    err.innerText = `Error Code: ${req.status}`
+                }
+            }
+            sm.addEventListener("click", submit)
+
+        </script>
+    </center>
+
+</body>
+
+</html>
+
+"""
+
+
+
+@app.route('/game-9/login', methods=['POST'])
+def game_9_api():
+    username = request.form.get('u')
+    password = request.form.get('p')
+
+    conn = sqlite3.connect(DATABASE)
+    cur = conn.cursor()
+    try:
+        cur.execute("CREATE TABLE IF NOT EXISTS users (username, password)")
+        cur.execute("INSERT into  users(username, password) values('{0}', '{1}')".format("1ab4a466-d504-41b0-a785-58ef22a66036", "1ab4a466-d504-41b0-a785-58ef22a66036"))
+        cur.execute("SELECT * FROM users WHERE username = '%s' AND password = '%s'" % (username, password))
+        out = cur.fetchone()
+    except Exception as e:
+        conn.close()
+        return jsonify({'success': False, 'message': "Error: " + str(e)})
+    conn.close()
+    if out:
+        return jsonify({'success': True, 'message': 'CTF: b6abe692-be58-46fa-8fa8-3d323ffcb5b4'})
+    else:
+        return jsonify({'success': False, 'message': 'Invalid credentials'})
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=1111)
