@@ -1,0 +1,25 @@
+FROM python:3.11.0-slim
+
+COPY ./req.txt ./req.txt
+
+COPY ./main.py ./code/main.py
+
+USER root
+
+ENV CTF=908f3075-0504-4d40-8d16-7253d3d4329e
+
+RUN apt-get -y update
+
+RUN apt-get install -y python3-dev python3-setuptools curl
+
+RUN pip install --no-cache-dir --upgrade pip
+
+RUN pip install --no-cache-dir --upgrade -r req.txt
+
+RUN useradd -u 8877 admin
+
+USER admin
+
+WORKDIR /code
+
+CMD ["python", "-u", "main.py"]

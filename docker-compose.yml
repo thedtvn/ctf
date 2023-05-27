@@ -1,0 +1,41 @@
+version: "3"
+services:
+  proxy:
+    image: docker-proxy:latest
+    build: "./docker proxy"
+    restart: always
+    stop_signal: SIGINT
+    read_only: true
+    networks:
+      - host
+      - no-networks
+        
+      
+  ctf-10:
+    image: ctf-10:latest
+    build: "./docker ctf-10"
+    restart: always
+    stop_signal: SIGINT
+    read_only: true
+    ports:
+      - "1113:1113"
+    networks:
+      no-networks:
+        ipv4_address: 10.5.0.2
+    depends_on:
+     - proxy
+      
+
+networks:
+  host:
+    name: host
+    driver: host
+    external: true
+  no-networks:
+    name: no-networks
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1
+    internal: true
+
