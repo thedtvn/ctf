@@ -1,5 +1,6 @@
 import flask, sqlite3
 from urllib import parse
+import requests
 import html, string, random, base64, json
 from flask import Flask, request, jsonify
 
@@ -407,6 +408,45 @@ def game_9_api():
         return jsonify({'success': True, 'message': 'CTF: b6abe692-be58-46fa-8fa8-3d323ffcb5b4'})
     else:
         return jsonify({'success': False, 'message': 'Invalid credentials'})
+
+@app.route('/game-10/', methods=['GET', 'POST'])
+def game_10():
+    outpt = ""
+    if request.method == "POST":
+        r = requests.get("http://localhost:1112/game-10/", json={"body": request.form.get("input", "print(\"Please Input Some thing\")")})
+        outpt = f"""
+        <h3> Output </h3>
+        <pre>{html.escape(r.json().get('out', "err"))}</pre>
+        """
+    return f"""<!DOCTYPE html>
+        <html lang="en" dir="ltr">
+          <head>
+            <meta charset="utf-8">
+            <title>CTF Game</title>
+            <style>
+                pre,
+                code {{
+                    background-color: #3e3e42;
+                    padding: 10px;
+                    text-align: start;
+                    color: #cdcdcd;
+                }}
+            </style>
+          </head>
+          <body>
+              <center>
+                    <form method="post">
+                        <label for="uname"><b>Calculator</b></label>
+                        <br>
+                        <textarea name="input" placeholder="math in here" required></textarea>
+                        <br>
+                        <button type="submit">get output</button>
+                    </form>
+                    {outpt}
+              </center>
+          </body>
+        </html>
+        """
 
 
 if __name__ == "__main__":

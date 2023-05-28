@@ -17,6 +17,10 @@ services:
     restart: always
     stop_signal: SIGINT
     read_only: true
+    volumes:
+      - /tmp:/tmp
+      - /var/tmp:/var/tmp
+      - /usr/tmp:/usr/tmp
     ports:
       - "1113:1113"
     networks:
